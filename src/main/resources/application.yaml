@@ -1,0 +1,30 @@
+server:
+  port: ${PORT:8080}
+  netty:
+    connection-timeout: 5s
+    idle-timeout: 15s
+
+spring:
+  application:
+    name: sjm-backend
+  main:
+    banner-mode: "off"
+
+# Configuración de Supabase
+# Se recomienda setear estas variables en el entorno (Koyeb o Local)
+supabase:
+  url: ${SUPABASE_URL:https://plnkegpxazzucliguapm.supabase.co}
+  key: ${SUPABASE_KEY:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsbmtlZ3B4YXp6dWNsaWd1YXBtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3MTY2OTAsImV4cCI6MjA5NjI5MjY5MH0.2eSQ-FBC-XEWpLowe9tS81MYxJBZilAVlpDnkDhvDqg}
+
+logging:
+  level:
+    root: INFO
+    com.parroquia: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+app:
+  reports:
+    template-path: "templates/"
+  concurrency:
+    io-threads: 5
