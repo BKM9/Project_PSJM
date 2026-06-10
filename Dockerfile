@@ -7,6 +7,9 @@ WORKDIR /app
 # Copiamos todo el proyecto al contenedor
 COPY . .
 
+# 🌟 LA LÍNEA SALVADORA: Le damos permisos de ejecución al wrapper en Linux
+RUN chmod +x ./gradlew
+
 # Desactivamos la auto-descarga de Toolchains y obligamos a usar el JDK de la imagen
 RUN ./gradlew clean bootJar -x test --no-daemon -Porg.gradle.java.installations.auto-download=false
 
