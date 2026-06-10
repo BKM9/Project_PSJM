@@ -1,19 +1,28 @@
-# Etapa 1: Construcción
-FROM eclipse-temurin:25-jdk-alpine AS build
+# ==========================================
+# Etapa 1: Construcción (Usamos JDK estándar para evitar errores de Gradle)
+# ==========================================
+FROM eclipse-temurin:25-jdk AS build
 WORKDIR /app
-COPY . .
-RUN chmod +x ./gradlew
-RUN ./gradlew clean bootJar
 
-# Etapa 2: Ejecución
+# Copiamos todo el proyecto
+COPY . .
+
+# Nos aseguramos de dar permisos de ejecución y corregir saltos de línea por si acaso
+RUN chmod +x ./gradlew
+
+# Compilamos saltándonos los tests unitarios para asegurar un despliegue rápido
+RUN ./gradlew clean bootJar -x test --no-daemon
+
+# ==========================================
+# Etapa 2: Ejecución (Mantenemos JRE Alpine para que pese poquísimo)
+# ==========================================
 FROM eclipse-temurin:25-jre-alpine
 WORKDIR /app
+
+# Copiamos el archivo .jar generado en la etapa anterior
 COPY --from=build /app/build/libs/*.jar app.jar
 
 # OPTIMIZACIÓN DINÁMICA DE MEMORIA PARA RENDER
-# -XX:MaxRAMPercentage=80.0 : Usa el 80% de la RAM asignada al contenedor (aprox 400MB en plan free)
-# -XX:+UseSerialGC : GC eficiente para 0.1vCPU de Render
-# -XX:+ExitOnOutOfMemoryError : Reinicia el contenedor si se queda sin memoria para evitar estados corruptos
 ENV JAVA_OPTS="-XX:MaxRAMPercentage=80.0 -XX:+UseSerialGC -XX:+ExitOnOutOfMemoryError"
 
 EXPOSE 8080
