@@ -1,22 +1,19 @@
 # ==========================================
-# Etapa 1: Construcción (Usamos JDK estándar para evitar errores de Gradle)
+# Etapa 1: Construcción (Usamos la imagen OFICIAL de Gradle)
 # ==========================================
-FROM eclipse-temurin:25-jdk AS build
+FROM gradle:9.5.1-jdk17 AS build
 WORKDIR /app
 
-# Copiamos todo el proyecto
+# Copiamos todo el proyecto al contenedor
 COPY . .
 
-# Nos aseguramos de dar permisos de ejecución y corregir saltos de línea por si acaso
-RUN chmod +x ./gradlew
-
-# Compilamos saltándonos los tests unitarios para asegurar un despliegue rápido
-RUN ./gradlew clean bootJar -x test --no-daemon
+# Desactivamos la auto-descarga de Toolchains y obligamos a usar el JDK de la imagen
+RUN ./gradlew clean bootJar -x test --no-daemon -Porg.gradle.java.installations.auto-download=false
 
 # ==========================================
-# Etapa 2: Ejecución (Mantenemos JRE Alpine para que pese poquísimo)
+# Etapa 2: Ejecución (Imagen ultra ligera para Render)
 # ==========================================
-FROM eclipse-temurin:25-jre-alpine
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 # Copiamos el archivo .jar generado en la etapa anterior
