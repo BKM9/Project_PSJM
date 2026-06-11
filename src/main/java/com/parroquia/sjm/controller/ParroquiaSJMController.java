@@ -68,7 +68,7 @@ public class ParroquiaSJMController {
         return bautizosService.guardarBautizo(bautizo);
     }
 
-    @GetMapping("/exportar/bautizo")
+    @GetMapping("/exportar/constancia/bautizo")
     public Mono<ResponseEntity<byte[]>> exportarBautizo(@RequestParam Long id) {
         return bautizosService.exportarCertificadoBautizo(id)
                 .map(reporte -> {
