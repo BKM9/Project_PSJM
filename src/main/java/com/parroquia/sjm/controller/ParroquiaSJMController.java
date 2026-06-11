@@ -39,6 +39,11 @@ public class ParroquiaSJMController {
         this.usuarioService = usuarioService;
     }
 
+    @GetMapping("/health")
+    public Mono<String> healthCheck() {
+        return Mono.just("OK");
+    }
+
     @GetMapping("/consultar/horario")
     public Flux<HorarioMisas> consultarHorarioMisas(
             @RequestParam String fechaInicio,
@@ -63,7 +68,7 @@ public class ParroquiaSJMController {
         return bautizosService.guardarBautizo(bautizo);
     }
 
-    @GetMapping("/exportar/constancia/bautizo")
+    @GetMapping("/exportar/bautizo")
     public Mono<ResponseEntity<byte[]>> exportarBautizo(@RequestParam Long id) {
         return bautizosService.exportarCertificadoBautizo(id)
                 .map(reporte -> {
