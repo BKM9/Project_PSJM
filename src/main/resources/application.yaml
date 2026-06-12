@@ -1,5 +1,5 @@
 server:
-  port: ${PORT:8080}
+  port: ${PORT:8081}
   netty:
     connection-timeout: 5s
     idle-timeout: 15s

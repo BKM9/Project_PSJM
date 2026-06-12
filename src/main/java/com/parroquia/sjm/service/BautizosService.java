@@ -1,6 +1,7 @@
 package com.parroquia.sjm.service;
 
 import com.parroquia.sjm.model.dto.BautizosDTO;
+import org.apache.logging.log4j.util.Strings;
 import org.apache.poi.xwpf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 @Service
 public class BautizosService {
@@ -71,7 +73,10 @@ public class BautizosService {
                 Map<String, String> replacements = new HashMap<>();
                 replacements.put("{{APELLIDOS}}", nvl(data.apellidos()).toUpperCase());
                 replacements.put("{{NOMBRES}}", nvl(data.nombres()).toUpperCase());
-                replacements.put("{{LIBRO}}", nvl(data.libro()));
+                
+                // Conversión de Libro a ROMANOS (en mayúsculas)
+                replacements.put("{{LIBRO}}", toRoman(nvl(data.libro())).toUpperCase());
+                
                 replacements.put("{{FOL}}", nvl(data.folio()));
                 replacements.put("{{REG}}", nvl(data.nDeRegistro()));
                 replacements.put("{{ANIO_B}}", String.valueOf(data.anioBautizo()));
@@ -85,7 +90,7 @@ public class BautizosService {
                 replacements.put("{{MADRE}}", nvl(data.nombreMadre()).toUpperCase());
                 replacements.put("{{PADRINO}}", nvl(data.nombrePadrino()).toUpperCase());
                 replacements.put("{{MADRINA}}", nvl(data.nombreMadrina()).toUpperCase());
-                replacements.put("{{ANOTACIONES}}", nvl(data.anotaciones()).toUpperCase());
+                replacements.put("{{ANOTACIONES}}", Strings.isEmpty(nvl(data.anotaciones())) ? "NINGUNA" : nvl(data.anotaciones()).toUpperCase());
 
                 // Fecha de impresión (D, MES, A)
                 replacements.put("{{D}}", String.format("%02d", hoy.getDayOfMonth()));
@@ -108,6 +113,31 @@ public class BautizosService {
     }
 
     private String nvl(String val) { return val == null ? "" : val; }
+
+    /**
+     * Convierte un número en formato String a su representación en números Romanos.
+     */
+    private String toRoman(String input) {
+        try {
+            int number = Integer.parseInt(input);
+            if (number < 1 || number > 3999) return input;
+            
+            TreeMap<Integer, String> map = new TreeMap<>();
+            map.put(1000, "M"); map.put(900, "CM"); map.put(500, "D"); map.put(400, "CD");
+            map.put(100, "C"); map.put(90, "XC"); map.put(50, "L"); map.put(40, "XL");
+            map.put(10, "X"); map.put(9, "IX"); map.put(5, "V"); map.put(4, "IV"); map.put(1, "I");
+            
+            StringBuilder sb = new StringBuilder();
+            while (number > 0) {
+                int l = map.floorKey(number);
+                sb.append(map.get(l));
+                number -= l;
+            }
+            return sb.toString();
+        } catch (NumberFormatException e) {
+            return input;
+        }
+    }
 
     private void replacePlaceholdersInParagraph(XWPFParagraph p, Map<String, String> replacements) {
         for (XWPFRun r : p.getRuns()) {

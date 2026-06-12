@@ -9,5 +9,6 @@ public record Horario (
         String hora,
         String dia,
         String tipoEvento,
-        String celebrante
+        String celebrante,
+        String detalles
 ){ }

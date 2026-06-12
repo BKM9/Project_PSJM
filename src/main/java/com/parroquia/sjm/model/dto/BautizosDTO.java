@@ -48,6 +48,8 @@ public record BautizosDTO(
     @JsonProperty("created_at")
     OffsetDateTime createdAt,
     @JsonProperty("updated_at")
-    OffsetDateTime updatedAt
+    OffsetDateTime updatedAt,
+    @JsonProperty("estado")
+    String estado
 ) {
 }

@@ -72,7 +72,8 @@ public class HorarioService {
                                                 h.hora().format(timeFormatter),
                                                 h.fecha().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                                                 h.tipoEvento(),
-                                                h.celebrante()
+                                                h.celebrante(),
+                                                h.detalles()
                                         ))
                                         .collect(Collectors.toList());
 
